@@ -53,7 +53,7 @@ const Address: FC<Props> = ({ avatar, disableAvatar, disableUrl, name, roles, ta
   }, [role, avatar, name]);
 
   const isValid = isValidXXNetworkAddress(hashProps.value);
-  const url = !disableUrl ? hashProps.url || `/accounts/${hashProps.value}` : undefined;
+  const url = !disableUrl ? hashProps.url || `https://explorer.xx.network/accounts/${hashProps.value}` : undefined;
   const tooltip = (
     <Stack sx={{ display: 'inline-flex' }} direction={'row'} spacing={1} alignItems={'center'}>
       <Typography component='span' variant='body5'>{hashProps.value}</Typography>
@@ -71,7 +71,6 @@ const Address: FC<Props> = ({ avatar, disableAvatar, disableUrl, name, roles, ta
           color={isValid ? 'info' : 'red'}
           fontSize='14px'
           fontWeight='400'
-          sx={{ maxWidth: { xs: '6rem' } }}
         >
             {targetBlank ? 
             <Link target='__blank' rel='noopener noreferrer' to={url}>{name}</Link>

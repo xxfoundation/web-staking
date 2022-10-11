@@ -49,7 +49,7 @@ const NonStakePanel: FC<Props> = ({
   stakingOption
 }) => {
   const { api } = useApi();
-  const accountURL = `/accounts/${account}`;
+  const accountURL = `https://explorer.xx.network/accounts/${account}`;
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState<boolean>(false);
   const [loadingPassword, setLoadingPassword] = useState(false);

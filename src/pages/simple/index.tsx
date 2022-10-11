@@ -5,7 +5,7 @@ import SimpleStaker from './SimpleStaker';
 import Api from '../../components/Api';
 
 const Staking: React.FC = () => (
-  <Container sx={{ my: 5 }}>
+  <Container maxWidth='lg' sx={{ my: 5 }}>
     <Breadcrumb />
     <Api>
       <SimpleStaker />
