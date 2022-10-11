@@ -1,0 +1,88 @@
+{
+  "name": "sleeve-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --transformIgnorePatterns \"node_modules/(?!@polkadot)\"",
+    "eject": "react-scripts eject",
+    "lint": "eslint src"
+  },
+  "resolutions": {
+    "@polkadot/wasm-crypto": "file:./src/sleeve/wasm-crypto",
+    "@polkadot/wasm-crypto-init": "file:./src/sleeve/wasm-crypto-init",
+    "@polkadot/wasm-crypto-wasm": "file:./src/sleeve/wasm-crypto-wasm"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.0",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.6",
+    "@mui/material": "^5.10.8",
+    "@mui/x-date-pickers": "^5.0.4",
+    "@polkadot/api": "^9.4.3",
+    "@polkadot/api-derive": "^9.4.3",
+    "@polkadot/keyring": "^10.1.10",
+    "@polkadot/types": "^9.4.3",
+    "@polkadot/ui-keyring": "^2.9.10",
+    "@polkadot/util": "^10.1.10",
+    "@polkadot/util-crypto": "^10.1.10",
+    "@polkadot/wasm-crypto": "^6.3.1",
+    "@sentry/react": "^7.15.0",
+    "@sentry/tracing": "^7.15.0",
+    "apollo-link-sentry": "^3.2.0",
+    "base64url": "^3.0.1",
+    "bignumber.js": "^9.1.0",
+    "copy-to-clipboard": "^3.3.2",
+    "dayjs": "^1.11.5",
+    "file-saver": "^2.0.5",
+    "graphql": "^16.6.0",
+    "graphql-ws": "^5.11.2",
+    "lodash": "^4.17.21",
+    "notistack": "^2.0.5",
+    "react": "18.2.0",
+    "react-app-rewired": "^2.2.1",
+    "react-dom": "18.2.0",
+    "react-router-dom": "^6.4.1",
+    "react-scripts": "^5.0.1",
+    "rxjs": "^7.5.7"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.10.12",
+    "@types/file-saver": "^2.0.5",
+    "@types/lodash": "^4.14.186",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "18.8.2",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "18.0.6",
+    "@types/webpack-env": "^1.18.0",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "crypto-browserify": "^3.12.0",
+    "enzyme": "^3.11.0",
+    "eslint": "8.24.0",
+    "eslint-config-airbnb-typescript": "^16.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-import-newlines": "^1.2.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sort-destructure-keys": "^1.4.0",
+    "stream-browserify": "^3.0.0",
+    "typescript": "4.8.4",
+    "util": "^0.12.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
