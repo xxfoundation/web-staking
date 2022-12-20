@@ -9,11 +9,6 @@
     "eject": "react-scripts eject",
     "lint": "eslint src"
   },
-  "resolutions": {
-    "@polkadot/wasm-crypto": "file:./src/sleeve/wasm-crypto",
-    "@polkadot/wasm-crypto-init": "file:./src/sleeve/wasm-crypto-init",
-    "@polkadot/wasm-crypto-wasm": "file:./src/sleeve/wasm-crypto-wasm"
-  },
   "dependencies": {
     "@apollo/client": "^3.7.0",
     "@emotion/react": "^11.10.4",
@@ -29,6 +24,7 @@
     "@polkadot/util": "^10.1.10",
     "@polkadot/util-crypto": "^10.1.10",
     "@polkadot/wasm-crypto": "^6.3.1",
+    "@polkadot/wasm-crypto-init": "^6.3.1",
     "@sentry/react": "^7.15.0",
     "@sentry/tracing": "^7.15.0",
     "apollo-link-sentry": "^3.2.0",
@@ -72,6 +68,11 @@
     "stream-browserify": "^3.0.0",
     "typescript": "4.8.4",
     "util": "^0.12.4"
+  },
+  "resolutions": {
+    "@polkadot/wasm-crypto": "file:./src/sleeve/wasm-crypto",
+    "@polkadot/wasm-crypto-init": "file:./src/sleeve/wasm-crypto-init",
+    "@polkadot/wasm-crypto-wasm": "file:./src/sleeve/wasm-crypto-wasm"
   },
   "browserslist": {
     "production": [
