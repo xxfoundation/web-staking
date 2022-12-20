@@ -1,6 +1,7 @@
 import type { WithChildren } from '../../types';
-import type { SubmittableExtrinsic } from '@polkadot/api/types';
+import type { SignerOptions, SubmittableExtrinsic } from '@polkadot/api/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
+import { web3FromSource } from '@polkadot/extension-dapp';
 
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PaperWrap from '../../components/PaperWrap';
@@ -179,8 +180,15 @@ const SimpleStaker = () => {
       setExecutingTransaction(true);
       try {
         const pair = keyring.getPair(selectedAccount);
-        pair.decodePkcs8(password);
-        (await transaction).signAndSend(pair, ({ status }) => {
+        const { meta: { isInjected, source } } = pair;
+        let options: Partial<SignerOptions> = {};
+        if (!isInjected) {
+          pair.decodePkcs8(password);
+        } else {
+          const injected = await web3FromSource(source as string);
+          options.signer = injected.signer;
+        }
+        (await transaction).signAndSend(pair || selectedAccount, options, ({ status }) => {
           if (status.isInBlock) {
             console.warn(`tx included in ${status.asInBlock}`);
             setBlockHash(status.asInBlock.toString());
