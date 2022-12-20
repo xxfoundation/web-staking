@@ -15,8 +15,8 @@ type Props = {
 
 const AccountDisplay: FC<Props> = ({ account, balance, targetBlank = false }) => {
   const {data, loading} = useQuery<GetDisplayIdentity>(GET_DISPLAY_IDENTITY, { variables: { account }});
-  const display = data?.roles && data?.roles.length && data?.roles[0].account?.identity?.display || undefined;
-  const rolesAux = data?.roles && data?.roles[0];
+  const display = data?.account && data?.account.length && data?.account[0].identity?.display || undefined;
+  const rolesAux = data?.account && data?.account[0];
   const roles: Partial<AccountRoles> = _.omit(rolesAux, 'account');
   const loadingQuery = loading;
 
