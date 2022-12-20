@@ -29,8 +29,8 @@ export type EconomicsSubscription = {
 
 export const LISTEN_FOR_ECONOMICS = gql`
   query ListenForEconomics {
-    economics(limit: 1, order_by: {active_era: desc}) {
-      activeEra: active_era
+    economics(limit: 1, order_by: {era: desc}) {
+      activeEra: era
       bridge
       canary
       circulating
