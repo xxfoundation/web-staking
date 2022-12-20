@@ -2,9 +2,12 @@ import '../augment-types';
 
 import type { WithChildren } from '../types';
 
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useCallback, useMemo, useState } from 'react';
 import { keyring } from '@polkadot/ui-keyring';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import type { InjectedExtension } from '@polkadot/extension-inject/types';
+import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import { objectSpread } from '@polkadot/util';
 import { TypeRegistry } from '@polkadot/types/create';
 import { Box, Typography } from '@mui/material';
 
@@ -12,6 +15,64 @@ import ApiContext, { ApiContextType } from './ApiContext';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
 import derives from '../custom-derives';
+
+interface InjectedAccountExt {
+  address: string;
+  meta: {
+    name: string;
+    source: string;
+    whenCreated: number;
+  };
+}
+
+function isKeyringLoaded () {
+  try {
+    return !!keyring.keyring;
+  } catch {
+    return false;
+  }
+}
+
+async function getInjectedAccounts (injectedPromise: Promise<InjectedExtension[]>): Promise<InjectedAccountExt[]> {
+  try {
+    await injectedPromise;
+
+    const accounts = await web3Accounts();
+
+    return accounts.map(({ address, meta }, whenCreated): InjectedAccountExt => ({
+      address,
+      meta: objectSpread({}, meta, {
+        name: `${meta.name || 'unknown'} (${meta.source === 'polkadot-js' ? 'extension' : meta.source})`,
+        whenCreated
+      })
+    }));
+  } catch (error) {
+    console.error('web3Accounts', error);
+
+    return [];
+  }
+}
+
+async function load(api: ApiPromise, injectedPromise: Promise<InjectedExtension[]>): Promise<void> {
+  const injectedAccounts = await getInjectedAccounts(injectedPromise);
+  const accounts = injectedAccounts.map(({ address, meta }) => {
+    return {
+      address,
+      meta: {
+        genesisHash: api.genesisHash.toString(),
+        name: meta.name,
+        source: meta.source,
+        whenCreated: meta.whenCreated,
+      }
+    }
+  });
+  if (!isKeyringLoaded()) {
+    keyring.loadAll({
+      genesisHash: api.genesisHash,
+      ss58Format: 55
+    }, accounts);
+  }
+}
 
 const registry = new TypeRegistry();
 
@@ -21,6 +82,15 @@ const Api: FC<WithChildren> = ({ children }) => {
   const [connected, setConnected] = useState(false);
   const [ready, setIsReady] = useState(false);
   const [generate, setGenerate] = useState(false);
+
+  const onError = useCallback(
+    (err: unknown): void => {
+      console.error(err);
+
+      setApiError((err as Error).message);
+    },
+    [setApiError]
+  );
 
   useEffect(() => {
     if (!api) {
@@ -39,21 +109,20 @@ const Api: FC<WithChildren> = ({ children }) => {
     if (api) {
       api.on('disconnected', () => setConnected(false));
       api.on('connected', () => setConnected(true));
-      api.on('error', (e) => setApiError(e));
+      api.on('error', onError);
       api.on('ready', () => {
+        const injectedPromise = web3Enable('xx network Simple Staking');
+
+        injectedPromise
+          .catch(console.error);
+
+        load(api, injectedPromise)
+          .catch(onError);
+
         setIsReady(true);
-        try {
-          keyring.loadAll({
-            genesisHash: api.genesisHash,
-            ss58Format: 55
-          });
-        } catch (err) {
-          // Ignoring the error here because keyring.loadInjected is private and this is
-          // the only method we can call to load
-        }
       });
     }
-  }, [api]);
+  }, [api, onError]);
 
   const context = useMemo<ApiContextType>(
     () => ({
