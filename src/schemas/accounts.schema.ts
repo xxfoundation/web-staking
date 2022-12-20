@@ -220,7 +220,7 @@ export const LISTEN_FOR_NEW_ACCOUNTS = gql`
     newAccount: event(where: {call: {_eq: "NewAccount"}}, order_by: {block: {era: desc}}) {
       accounts: data
       block {
-        era: era
+        era
       }
     }
   }

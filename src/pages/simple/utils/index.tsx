@@ -1,34 +1,11 @@
 import { stripNonDigits } from '../../../utils';
 import { BN, BN_MILLION } from '@polkadot/util';
-
-export type Economics = {
-  activeEra: number;
-  inflationRate: string;
-  timestamp: string;
-  totalIssuance: string;
-  totalSupply: string;
-  bridge: string;
-  canary: string;
-  circulating: string;
-  claims: string;
-  custody: string;
-  rewards: string;
-  sales: string;
-  stakeableSupply: string;
-  staked: string;
-  inactiveStaked: string;
-  treasury: string;
-  unbonding: string;
-  liquid: string;
-  vesting: string;
-  tmStaked: string;
-}
-
+import { Economics } from '../../../schemas/economics.schema';
 
 export const getStakedReturn = (economics: Economics): number => {
-  const totalStaked = new BN(stripNonDigits(economics?.staked));
-  const tmStaked = new BN(stripNonDigits(economics?.tmStaked));
-  const stakeableSupply = new BN(stripNonDigits(economics?.stakeableSupply));
+  const totalStaked = new BN(stripNonDigits(economics?.staked.toString().slice(15)));
+  const tmStaked = new BN(stripNonDigits(economics?.tmStaked.toString().slice(15)));
+  const stakeableSupply = new BN(stripNonDigits(economics?.stakeableSupply.toString().slice(15)));
   const inflationRate = new BN(stripNonDigits(economics?.inflationRate)).toNumber();
   const stakedFraction =
     totalStaked.mul(BN_MILLION).div(stakeableSupply).toNumber() / BN_MILLION.toNumber();
