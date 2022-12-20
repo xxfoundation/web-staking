@@ -34,6 +34,7 @@ const AmountDisplay = styled(Typography)(({ theme }) => ({
 type Props = {
   amount: BN;
   account: string;
+  injected: boolean;
   stakingOption: string;
   stakingBalances?: StakingBalances;
   setTransaction: (tx: Promise<SubmittableExtrinsic<'promise', ISubmittableResult>>) => void;
@@ -43,6 +44,7 @@ type Props = {
 const NonStakePanel: FC<Props> = ({
   account,
   amount,
+  injected,
   setPassword,
   setTransaction,
   stakingBalances,
@@ -114,7 +116,7 @@ const NonStakePanel: FC<Props> = ({
             .
           </Typography>
         </Alert>
-        <Stack spacing={1}>
+        {!injected && <Stack spacing={1}>
           <Typography variant='body3' sx={{ textAlign: 'end' }}>
             Insert password to unlock your wallet
           </Typography>
@@ -134,7 +136,7 @@ const NonStakePanel: FC<Props> = ({
           </Stack>
           {error && <Alert severity='error'>{error}</Alert>}
           {!error && ready && <Alert severity='success'>Password confimed!</Alert>}
-        </Stack>
+        </Stack>}
       </Stack>
     </>
   );

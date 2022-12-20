@@ -22,6 +22,7 @@ import NonStakePanel from './panels/NonStakePanel';
 import useApi from '../../hooks/useApi';
 import Loading from '../../components/Loading';
 import { theme } from '../../theme';
+import { KeyringPair } from '@polkadot/keyring/types';
 
 type PanelProps = WithChildren &
   NavProps & {
@@ -86,6 +87,7 @@ const SimpleStaker = () => {
   const accounts = useAccounts();
   const { api } = useApi();
   const [selectedAccount, setSelectedAccount] = useState('');
+  const [injected, setInjected] = useState(false);
   const [selectedStakingOption, setSelectedStakingOption] = useState<StakingOptions>('stake');
   const [step, setStep] = useState(0);
   const [amount, setAmount] = useState(BN_ZERO);
@@ -109,6 +111,7 @@ const SimpleStaker = () => {
 
   const reset = useCallback(() => {
     setSelectedAccount('');
+    setInjected(false);
     setSelectedStakingOption('stake');
     setAmount(BN_ZERO);
     setStep(0);
@@ -134,6 +137,7 @@ const SimpleStaker = () => {
   useEffect(() => {
     if (selectedAccount && !accounts.allAccounts.includes(selectedAccount)) {
       setSelectedAccount('');
+      setInjected(false);
     }
   }, [accounts.allAccounts, selectedAccount]);
 
@@ -144,9 +148,9 @@ const SimpleStaker = () => {
       2: !!selectedAccount,
       3: accounts.hasAccounts && !!selectedAccount && !!selectedStakingOption,
       4: amountIsValid,
-      5: !!password
+      5: !!password || injected,
     }),
-    [accounts.hasAccounts, amountIsValid, password, selectedAccount, selectedStakingOption]
+    [accounts.hasAccounts, amountIsValid, injected, password, selectedAccount, selectedStakingOption]
   );
 
   const next = useCallback(() => {
@@ -175,20 +179,32 @@ const SimpleStaker = () => {
     [validSteps]
   );
 
+  const onSelectedAccount = useCallback(
+    (account: string) => {
+      setSelectedAccount(account);
+      const pair = keyring.getPair(account);
+      const { meta: { isInjected } } = pair;
+      setInjected(isInjected as boolean);
+    },
+    [setSelectedAccount, setInjected]
+  );
+
   const signAndFinish = useCallback(async () => {
     if (transaction) {
       setExecutingTransaction(true);
       try {
         const pair = keyring.getPair(selectedAccount);
-        const { meta: { isInjected, source } } = pair;
-        let options: Partial<SignerOptions> = {};
-        if (!isInjected) {
+        const { meta: { source } } = pair;
+        const options: Partial<SignerOptions> = {};
+        let pairOrAddress: KeyringPair | string = pair;
+        if (!injected) {
           pair.decodePkcs8(password);
         } else {
-          const injected = await web3FromSource(source as string);
-          options.signer = injected.signer;
+          const injectedSigner = await web3FromSource(source as string);
+          options.signer = injectedSigner.signer;
+          pairOrAddress = selectedAccount;
         }
-        (await transaction).signAndSend(pair || selectedAccount, options, ({ status }) => {
+        (await transaction).signAndSend(pairOrAddress, options, ({ status }) => {
           if (status.isInBlock) {
             console.warn(`tx included in ${status.asInBlock}`);
             setBlockHash(status.asInBlock.toString());
@@ -201,7 +217,7 @@ const SimpleStaker = () => {
       setExecutingTransaction(false);
     }
     next();
-  }, [next, password, selectedAccount, transaction]);
+  }, [next, password, injected, selectedAccount, transaction]);
 
   const panelProps = useCallback(
     (index: number, confirmStep?: boolean): PanelProps => ({
@@ -279,7 +295,7 @@ const SimpleStaker = () => {
             <ConnectWallet />
           </Panel>
           <Panel {...panelProps(1)}>
-            <WalletSelection onSelect={setSelectedAccount} selected={selectedAccount} />
+            <WalletSelection onSelect={onSelectedAccount} selected={selectedAccount} />
           </Panel>
           <Panel {...panelProps(2)}>
             <Loading loading={!stakingBalances}>
@@ -306,6 +322,7 @@ const SimpleStaker = () => {
             <Panel {...panelPropsSigning(4, true)}>
               <APYPanel
                 account={selectedAccount}
+                injected={injected}
                 amount={amount}
                 stakingBalances={stakingBalances}
                 setTransaction={setTransaction}
@@ -317,6 +334,7 @@ const SimpleStaker = () => {
               <NonStakePanel
                 account={selectedAccount}
                 amount={amount}
+                injected={injected}
                 stakingOption={selectedStakingOption}
                 stakingBalances={stakingBalances}
                 setTransaction={setTransaction}

@@ -46,12 +46,13 @@ const { href: walletUrl } = new URL('/#/staking/actions', process.env.REACT_APP_
 type Props = {
   amount: BN;
   account: string;
+  injected: boolean;
   stakingBalances?: StakingBalances;
   setTransaction: (tx: Promise<SubmittableExtrinsic<'promise', ISubmittableResult>>) => void;
   setPassword: (password: string) => void;
 };
 
-const APYPanel: FC<Props> = ({ account, amount, setPassword, setTransaction, stakingBalances }) => {
+const APYPanel: FC<Props> = ({ account, amount, injected, setPassword, setTransaction, stakingBalances }) => {
   const [expandValidators, validators] = useToggle();
   const { api } = useApi();
   const endIcon = useMemo(
@@ -179,7 +180,7 @@ const APYPanel: FC<Props> = ({ account, amount, setPassword, setTransaction, sta
             {expandValidators && selectedValidators && (
               <ValidatorList accounts={selectedValidators} />
             )}
-            <Stack spacing={1}>
+            {!injected && <Stack spacing={1}>
               <Typography variant='body3' sx={{ textAlign: 'end' }}>
                 Insert password to unlock your wallet
               </Typography>
@@ -199,7 +200,7 @@ const APYPanel: FC<Props> = ({ account, amount, setPassword, setTransaction, sta
               </Stack>
               {error && <Alert severity='error'>{error}</Alert>}
               {!error && ready && <Alert severity='success'>Password confirmed!</Alert>}
-            </Stack>
+            </Stack>}
           </>
         ) : (
           <Stack spacing={4} sx={{ p: 3, textAlign: 'center' }}>
@@ -209,7 +210,7 @@ const APYPanel: FC<Props> = ({ account, amount, setPassword, setTransaction, sta
             </Typography>
           </Stack>
         )) : (
-          <Stack spacing={1}>
+          !injected && <Stack spacing={1}>
               <Typography variant='body3' sx={{ textAlign: 'end' }}>
                 Insert password to unlock your wallet
               </Typography>
