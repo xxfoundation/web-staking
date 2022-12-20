@@ -44,17 +44,23 @@ const FinishPanel: FC<Props> = ({ account, amount, blockHash, error, loading, op
     )
   }
 
-  if (loading || !blockHash) {
+  if (loading) {
     return (
       <Stack spacing={4} sx={{ p: 3, textAlign: 'center' }}>
         <Loading size='md' />
-
         <Typography variant='body3' sx={{ mt: 2, fontSize: '1.25rem' }}>
-          {!loading && !blockHash ? (
+          <>Please sign the transaction</>
+        </Typography>
+      </Stack>
+    );
+  }
+
+  if (!blockHash) {
+    return (
+      <Stack spacing={4} sx={{ p: 3, textAlign: 'center' }}>
+        <Loading size='md' />
+        <Typography variant='body3' sx={{ mt: 2, fontSize: '1.25rem' }}>
             <>Waiting for your transaction to be included in a block...</>
-          ) : (
-            <>Connecting to the xx network blockchain...</>
-          )}
         </Typography>
       </Stack>
     );

@@ -148,9 +148,9 @@ const SimpleStaker = () => {
       2: !!selectedAccount,
       3: accounts.hasAccounts && !!selectedAccount && !!selectedStakingOption,
       4: amountIsValid,
-      5: !!password || injected,
+      5: !!password,
     }),
-    [accounts.hasAccounts, amountIsValid, injected, password, selectedAccount, selectedStakingOption]
+    [accounts.hasAccounts, amountIsValid, password, selectedAccount, selectedStakingOption]
   );
 
   const next = useCallback(() => {
@@ -190,6 +190,7 @@ const SimpleStaker = () => {
   );
 
   const signAndFinish = useCallback(async () => {
+    next();
     if (transaction) {
       setExecutingTransaction(true);
       try {
@@ -204,19 +205,27 @@ const SimpleStaker = () => {
           options.signer = injectedSigner.signer;
           pairOrAddress = selectedAccount;
         }
-        (await transaction).signAndSend(pairOrAddress, options, ({ status }) => {
+        const tx = await transaction;
+
+        // 1. Sign transaction
+        await tx.signAsync(pairOrAddress, options)
+
+        setExecutingTransaction(false);
+        setPassword(undefined);
+
+        // 2. Send transaction and follow status
+        tx.send(({ status }) => {
           if (status.isInBlock) {
             console.warn(`tx included in ${status.asInBlock}`);
             setBlockHash(status.asInBlock.toString());
           }
         });
+      } catch(err) {
+        setError((err as string).toString());
         setPassword(undefined);
-      } catch {
-        setError('Unable to sign transaction');
-      }
-      setExecutingTransaction(false);
+        setExecutingTransaction(false);
+      };
     }
-    next();
   }, [next, password, injected, selectedAccount, transaction]);
 
   const panelProps = useCallback(

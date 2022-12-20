@@ -103,7 +103,11 @@ const APYPanel: FC<Props> = ({ account, amount, injected, setPassword, setTransa
     }
     const targets = await selectValidators(api, stakingBalances.stash);
     setSelectedValidators(targets.map((validator) => validator.validatorId));
-  }, [stakingBalances, api]);
+    // For injected accounts, allow submission after targets are selected by piggybacking on password
+    if (injected) {
+      setPassword('empty');
+    }
+  }, [stakingBalances, api, injected, setPassword]);
 
   useEffect(() => {
     if (stakingBalances && !stakingBalances.onlyStash) {

@@ -77,13 +77,20 @@ const NonStakePanel: FC<Props> = ({
 
   // Create Transaction
   useEffect(() => {
+    // For injected accounts always allow submission
     if (api && stakingBalances && stakingOption === 'unstake') {
       setTransaction(unstake(api, stakingBalances.controller, amount));
+      if (injected) {
+        setPassword('empty');
+      }
     }
     if (api && stakingBalances && stakingOption === 'redeem') {
       setTransaction(redeem(api, stakingBalances.controller));
+      if (injected) {
+        setPassword('empty');
+      }
     }
-  }, [amount, api, setTransaction, stakingBalances, stakingOption]);
+  }, [amount, api, injected, setTransaction, stakingBalances, stakingOption, setPassword]);
 
   return (
     <>
