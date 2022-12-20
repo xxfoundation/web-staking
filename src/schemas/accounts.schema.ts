@@ -47,7 +47,7 @@ export const IDENTITY_FRAGMENT = gql`
 `;
 
 export const ROLES_FRAGMENT = gql`
-  fragment roles on roles {
+  fragment roles_fragment on account {
     council
     nominator
     special
@@ -66,28 +66,23 @@ export const GET_FULL_IDENTITY = gql`
 `
 
 export type GetDisplayIdentity = {
-  roles: {
+  account: {
     council: boolean;
     nominator: boolean;
     special: string;
     techcommit: boolean;
     validator: boolean;
-    account: {
-      identity: {
-        display: string;
-      }
+    identity: {
+      display: string;
     }
   }[]
 }
 export const GET_DISPLAY_IDENTITY = gql`
-  ${ROLES_FRAGMENT}
   query GetDisplayIdentity($account: String!) {
-    roles(where: { account_id: { _eq: $account } }) {
-      ...roles
-      account {
-        identity {
-          display
-        }
+    account(where: { account_id: { _eq: $account } }) {
+      ...roles_fragment
+      identity {
+        display
       }
     }
   }
@@ -145,9 +140,7 @@ export const ACCOUNT_FRAGMENT = gql`
     }
     nonce
     timestamp
-    roles: role {
-      ...roles
-    }
+    ...roles_fragment
     lockedBalance: locked_balance
     reservedBalance: reserved_balance
     totalBalance: total_balance
