@@ -78,6 +78,7 @@ export type GetDisplayIdentity = {
   }[]
 }
 export const GET_DISPLAY_IDENTITY = gql`
+  ${ROLES_FRAGMENT}
   query GetDisplayIdentity($account: String!) {
     account(where: { account_id: { _eq: $account } }) {
       ...roles_fragment
