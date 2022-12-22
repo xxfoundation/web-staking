@@ -259,7 +259,7 @@ const SimpleStaker = () => {
   return (
     <Stack sx={{px: '24px'}}>
       <div ref={scrollRef} />
-      <Typography variant='h1' sx={{ pb: 5 }}>
+      <Typography variant='h1' sx={{ display: { xs: 'none'}, pb: 5 }}>
         Simple Staking
       </Typography>
       <PaperWrap sx={{ p: { xs: 0, sm: 0, md: 0 }, overflow: 'hidden' }}>

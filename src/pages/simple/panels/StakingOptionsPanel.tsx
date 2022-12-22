@@ -50,7 +50,7 @@ const ActionSelection: FC<Props> = ({ balances, onSelect, selected }) => {
   return (
     <>
       <Stack spacing={4}>
-        <Typography variant='h2'>Select one of the following options:</Typography>
+        <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Select Option</Typography>
         <FormControl>
           <RadioGroup
             value={selected ?? ''}

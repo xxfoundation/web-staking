@@ -53,7 +53,7 @@ const ConnectWallet: FC = () => {
       <Stack spacing={3}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <Stack direction={'column'} spacing={2}>
-            <Typography variant='h2'>Connect Wallet</Typography>
+            <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Connect Wallet</Typography>
             <Typography variant='body3'>
               Welcome to the xx network’s simplified staking tool. This app will help you stake (or
               unstake) your xx coins and redeem your rewards with only a handful of clicks while

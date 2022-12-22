@@ -95,7 +95,7 @@ const NonStakePanel: FC<Props> = ({
   return (
     <>
       <Stack spacing={4}>
-        <Typography variant='h2'>Sign and Submit</Typography>
+        <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Sign and Submit</Typography>
         <Typography variant='body3'>
           {stakingOption === 'unstake'
             ? 'Please remember that the unstaking process takes 28 days. Furthermore, coins will be kept locked until you redeem them. You can unlock your coins using the Redeem option on this app, after waiting for 28 days.'

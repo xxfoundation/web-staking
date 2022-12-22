@@ -42,7 +42,7 @@ function Step3({ keypair, keyring, onFinish }: Props): React.ReactElement {
 
   return (
     <Stack style={{ margin: '1em' }} spacing={2}>
-      <Typography variant='h2'>Finish Wallet Setup</Typography>
+      <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Finish Wallet Setup</Typography>
       <Typography variant='body3'>Nicely done! You are now ready to use your wallet.</Typography>
       {keypair ?
         <Stack spacing={0} sx={{ borderLeft: '4px solid #00A2D6', paddingLeft: '0.5em'  }}>

@@ -86,7 +86,7 @@ const WalletSelection: FC<Props> = ({ onSelect, selected }) => {
 
   return (
     <Stack spacing={4}>
-      <Typography variant='h2'>Select Wallet</Typography>
+      <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Select Wallet</Typography>
       {!balances || !accounts || !stashes || !navigator.onLine ? (
         <Box sx={{ p: 5, py: 20 }}>
           <Loading size='md' />
@@ -96,7 +96,7 @@ const WalletSelection: FC<Props> = ({ onSelect, selected }) => {
         </Box>
       ) : (
         <TableContainer>
-          <Table size='small'>
+          <Table size='small' padding='none'>
             <TableHead>
               <TableRow>
                 <TableCell>Account</TableCell>

@@ -165,7 +165,7 @@ const AmountSelection: FC<Props> = ({
 
   return (
     <Stack spacing={4}>
-      <Typography variant='h2'>{option && title[option]}</Typography>
+      <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>{option && title[option]}</Typography>
       <Box>
         <Typography variant='h3' sx={{ mb: 2 }}>
           Account
@@ -190,7 +190,7 @@ const AmountSelection: FC<Props> = ({
                   {option !== 'redeem' && (
                     <TableCell>
                       <Typography sx={{ color: validationColor }} variant='body2'>
-                        <FormatBalance value={displayedStake} precision={4} />
+                        <FormatBalance value={displayedStake} precision={2} />
                       </Typography>
                     </TableCell>
                   )}
@@ -198,16 +198,16 @@ const AmountSelection: FC<Props> = ({
                     <TableCell>
                       <Typography variant='body2'>
                         {option === 'redeem' ? (
-                          <FormatBalance value={redeemable} precision={4} />
+                          <FormatBalance value={redeemable} precision={2} />
                         ) : (
-                          <FormatBalance value={available} precision={4} />
+                          <FormatBalance value={available} precision={2} />
                         )}
                       </Typography>
                     </TableCell>
                   }
                   <TableCell>
                     <Typography variant='body2'>
-                      <FormatBalance value={totalBalance} precision={4} />
+                      <FormatBalance value={totalBalance} precision={2} />
                     </Typography>
                   </TableCell>
                 </TableRow>

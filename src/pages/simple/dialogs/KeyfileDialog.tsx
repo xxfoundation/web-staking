@@ -156,7 +156,7 @@ const KeyfileDialog: FC<Props> = ({ onClose, open }) => {
         )}
         <Stack direction='row' justifyContent='center' spacing={2}>
           <Box>
-            <Button variant='contained' component='label'>
+            <Button variant='contained' component='label' sx={{minWidth: '9em'}}>
               Upload File
               <input
                 onChange={onChangeFile}

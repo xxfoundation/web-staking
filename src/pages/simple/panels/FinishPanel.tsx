@@ -68,7 +68,7 @@ const FinishPanel: FC<Props> = ({ account, amount, blockHash, error, loading, op
 
   return (
     <Stack spacing={4}>
-      <Typography variant='h2'>Extrinsic Submitted Successfully</Typography>
+      <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Extrinsic Submitted Successfully</Typography>
       <Typography variant='body3' sx={{ fontSize: '1rem' }}>
         Congratulations! You've successfully{' '}
         {

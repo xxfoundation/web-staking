@@ -128,7 +128,7 @@ const APYPanel: FC<Props> = ({ account, amount, injected, setPassword, setTransa
   return (
     <>
       <Stack spacing={4}>
-        <Typography variant='h2'>{stakingBalances?.onlyStash ? 'APY ': 'Nominate'}</Typography>
+        <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>{stakingBalances?.onlyStash ? 'APY ': 'Nominate'}</Typography>
         <Typography variant='body3'>
           If you wish to maximize your returns, use this app on a regular basis to change your selected
           validators. The following APY and staking rewards estimates are not guaranteed and can

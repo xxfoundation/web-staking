@@ -96,7 +96,7 @@ function Step2({ cancel, mnemonics, onFinish }: Props): React.ReactElement {
 
   return (
     <Stack sx={{ margin: '1em' }} spacing={2}>
-      <Typography variant='h2'>Confirm Mnemonics</Typography>
+      <Typography variant='h2' sx={{fontSize: {xs: '22px', md: '30px'}, textAlign: {xs: 'center', md: 'left'}}}>Confirm Mnemonics</Typography>
       {!onStage2 && (
         <Stack spacing={2}>
           <Typography variant='h3'>
