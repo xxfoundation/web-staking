@@ -4,7 +4,7 @@ import '../augment-types/augment-api';
 import type { PalletStakingNominations, PalletStakingStakingLedger, PalletStakingValidatorPrefs } from '@polkadot/types/lookup';
 import type { ApiPromise } from '@polkadot/api';
 
-import _ from 'lodash';
+import { uniq } from 'lodash';
 import BigNumber from 'bignumber.js';
 
 import { ElectedValidator, Voter, seqPhragmen } from './phragmen';
@@ -16,6 +16,7 @@ interface ChainData {
   ledgers: Record<string, PalletStakingStakingLedger>;
   validators: Record<string, PalletStakingValidatorPrefs>;
   nominators: Record<string, PalletStakingNominations>;
+  lastNonZeroSlashes: Record<string, number>;
   count: number;
   // Performance information
   performance: Record<string, number[]>;
@@ -30,6 +31,7 @@ const getChainData = async (api: ApiPromise, eras = 7): Promise<ChainData> => {
     ledgers: {},
     validators: {},
     nominators: {},
+    lastNonZeroSlashes: {},
     count: 0,
     performance: {},
   };
@@ -39,6 +41,7 @@ const getChainData = async (api: ApiPromise, eras = 7): Promise<ChainData> => {
     ledger,
     validators,
     nominators,
+    slashes,
     validatorCount,
     activeEra,
   ] = await Promise.all([
@@ -46,6 +49,7 @@ const getChainData = async (api: ApiPromise, eras = 7): Promise<ChainData> => {
     api.query.staking.ledger.entries(),
     api.query.staking.validators.entries(),
     api.query.staking.nominators.entries(),
+    api.query.staking.slashingSpans.entries(),
     api.query.staking.validatorCount(),
     api.query.staking.activeEra(),
   ]);
@@ -68,6 +72,11 @@ const getChainData = async (api: ApiPromise, eras = 7): Promise<ChainData> => {
   nominators.forEach(([{ args }, nominations]) => {
     data.nominators[args[0].toString()] = nominations.unwrap();
   })
+  // Convert slashes
+  slashes.forEach(([{ args }, slashSpans]) => {
+    data.lastNonZeroSlashes[args[0].toString()] = slashSpans.unwrap().lastNonzeroSlash.toNumber();
+  });
+
   data.count = validatorCount.toNumber();
 
   // ------------------------------------ //
@@ -110,15 +119,34 @@ const buildVotersList = (chainData: ChainData, exclude: string): Voter[] => {
   Object.keys(chainData.nominators).forEach((nomId) => {
     // Skip excluded address
     if (exclude !== nomId) {
-      // Remove duplicates and non validators from targets
+      // Get targets
       const noms = chainData.nominators[nomId];
-      const targets = _.uniq(noms.targets).map((target) => target.toString()).filter((target) => target in chainData.validators);
+      const targets = noms.targets.map((target) => target.toString());
+      const submittedIn = noms.submittedIn.toNumber();
+
+      // Remove duplicates, non validators and slashed validators needing renomination from targets
+      const filteredTargets = uniq(targets.filter((target) => {
+        // If not a validator return right away
+        if (!(target in chainData.validators)) {
+          return false;
+        }
+
+        // Get last slashed era for this target
+        const slashEra = chainData.lastNonZeroSlashes[target] || 0;
+
+        // Check if nominations were submitted after the slash
+        return submittedIn >= slashEra;
+      }));
+
       const ledger = chainData.ledgers[chainData.controllers[nomId]];
-      voters.push({
-        nominatorId: nomId,
-        stake: ledger.active.toString(),
-        targets: targets,
-      });
+
+      if (filteredTargets.length > 0) {
+        voters.push({
+          nominatorId: nomId,
+          stake: ledger.active.toString(),
+          targets: filteredTargets,
+        });
+      }
     }
   });
   // Add validators self vote
