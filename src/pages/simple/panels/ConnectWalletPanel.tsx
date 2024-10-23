@@ -157,7 +157,7 @@ const ConnectWallet: FC = () => {
               <br />
               This app does not make any guarantees as to the future performance or viability of any
               nodes. While extremely rare, if nodes you’ve staked on misbehave, it is possible for
-              you to lose a very small amount of your staked xx coin.
+              you to lose some of your staked xx coin.
               <br />
               <br />
               This app does not guarantee fixed returns. The staking rewards earned daily will
