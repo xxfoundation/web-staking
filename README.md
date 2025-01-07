@@ -40,7 +40,7 @@ To get started with `web-staking`, follow these steps:
 
 3. Install the necessary dependencies:
    ```bash
-   npm install
+   yarn
    ```
 
 ## Usage
@@ -48,7 +48,7 @@ To get started with `web-staking`, follow these steps:
 To start the application in development mode, use:
 
 ```bash
-npm start
+yarn start
 ```
 
 The development server will run on port `3000`. Open your browser and navigate to `http://localhost:3000` to access the application.
@@ -119,7 +119,7 @@ REACT_APP_WALLET_URL=https://wallet.xx.network
 The project uses `react-app-rewired` for builds:
 
 ```bash
-npm run build
+yarn build
 ```
 
 Build artifacts are output to the `build/` folder.
