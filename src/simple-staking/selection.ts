@@ -8,7 +8,7 @@ import { uniq } from 'lodash';
 import BigNumber from 'bignumber.js';
 
 import { ElectedValidator, Voter, seqPhragmen } from './phragmen';
-
+import { ValidatorFilter } from './filters';
 
 interface ChainData {
   // Current information
@@ -166,20 +166,22 @@ const computeReturn = (chainData: ChainData, elected: ElectedValidator, avgStake
 const targets = 16;
 const maxNominations = 256;
 
-const orderValidatorsByReturn = (chainData: ChainData, validators: ElectedValidator[]): ElectedWithReturn[] => {
+const orderValidatorsByReturn = (chainData: ChainData, validators: ElectedValidator[], customFilters: ValidatorFilter[]): ElectedWithReturn[] => {
   // Compute average stake
   const avgStake = validators.reduce((sum, val) => sum.plus(val.backedStake), new BigNumber(0)).dividedBy(validators.length);
   // Compute return for all elected validators
   // Then filter out validators that are blocking nominations and that have 256+ nominators
+  // Then apply custom filters
   // And finally sort them descending (by return)
   const ordered: ElectedWithReturn[] = validators
     .map((validator) => computeReturn(chainData, validator, avgStake))
     .filter(({ backers, blocked }) => !blocked && backers < maxNominations)
+    .filter((validator) => customFilters.every((filter) => filter(validator)))
     .sort((a, b) => a.return > b.return ? -1 : 1);
   return ordered.slice(0, targets)
 }
 
-export const selectValidators = async (api: ApiPromise, nominator: string): Promise<ElectedWithReturn[]> => {
+export const selectValidators = async (api: ApiPromise, nominator: string, customFilters: ValidatorFilter[] = []): Promise<ElectedWithReturn[]> => {
   // Get chain data
   const chainData = await getChainData(api);
   // Builder voters list (excluding our address)
@@ -187,5 +189,5 @@ export const selectValidators = async (api: ApiPromise, nominator: string): Prom
   // Run phragmen
   const [, elected] = seqPhragmen(voters, chainData.count);
   // Order validators by return and get top 16
-  return orderValidatorsByReturn(chainData, elected);
+  return orderValidatorsByReturn(chainData, elected, customFilters);
 }

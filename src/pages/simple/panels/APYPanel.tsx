@@ -28,6 +28,8 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 import Loading from '../../../components/Loading';
 import { selectValidators } from '../../../simple-staking/selection';
+import { GetValidatorsPerCommission, GET_VALIDATORS_PER_COMMISSION } from '../../../schemas/staking.schema';
+import { COMMISSION_FILTER, fetchStaticList, validatorFilterExcludedList } from '../../../simple-staking/filters';
 
 const AmountDisplay = styled(Typography)(({ theme }) => ({
   lineHeight: 1,
@@ -79,6 +81,17 @@ const APYPanel: FC<Props> = ({ account, amount, injected, setPassword, setTransa
     [amount, apy, stakingBalances?.staked]
   );
 
+  // Get validator stats
+  const { data: validatorsPerCommission } = useQuery<GetValidatorsPerCommission>(GET_VALIDATORS_PER_COMMISSION, {
+    variables: {
+      commission: COMMISSION_FILTER
+    }
+  });
+
+  const validatorsList = useMemo(() => {
+    return validatorsPerCommission?.stats.map((validator) => validator.id) ?? [];
+  }, [validatorsPerCommission]);
+
   // Unlock account
   const checkPassword = useCallback((): void => {
     setError(null);
@@ -101,13 +114,19 @@ const APYPanel: FC<Props> = ({ account, amount, injected, setPassword, setTransa
     if (!api || !stakingBalances) {
       return undefined;
     }
-    const targets = await selectValidators(api, stakingBalances.stash);
+    // Create custom filters
+    // - Exclude validators based on commission
+    const commissionFilter = validatorFilterExcludedList(validatorsList);
+    // - Exclude validators based on static list
+    const staticList = await fetchStaticList();
+    const staticListFilter = validatorFilterExcludedList(staticList);
+    const targets = await selectValidators(api, stakingBalances.stash, [commissionFilter, staticListFilter]);
     setSelectedValidators(targets.map((validator) => validator.validatorId));
     // For injected accounts, allow submission after targets are selected by piggybacking on password
     if (injected) {
       setPassword('empty');
     }
-  }, [stakingBalances, api, injected, setPassword]);
+  }, [stakingBalances, api, injected, setPassword, validatorsList]);
 
   useEffect(() => {
     if (stakingBalances && !stakingBalances.onlyStash) {
