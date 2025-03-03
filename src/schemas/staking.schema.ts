@@ -173,6 +173,29 @@ export const GET_VALIDATOR_STATS = gql`
   }
 `;
 
+export type GetValidatorsPerCommission = {
+  agg: { aggregate: { count: number } }
+  stats: {
+    id: string;
+  }[]
+}
+
+export const GET_VALIDATORS_PER_COMMISSION = gql`
+  query GetValidatorsPerCommission($commission: Float!) {
+    agg: validator_stats_aggregate(
+      where: {commission: {_gte: $commission}}
+      distinct_on: stash_address
+    ) {
+      aggregate {
+        count
+      }
+    }
+    stats: validator_stats(where: {commission: {_gte: $commission}}, distinct_on: stash_address) {
+      id: stash_address
+    }
+  }
+`;
+
 /* -------------------------------------------------------------------------- */
 /*                                Staking Stats                               */
 /* -------------------------------------------------------------------------- */
